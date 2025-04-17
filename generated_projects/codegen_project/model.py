@@ -1,81 +1,53 @@
 # 实现要求：
-# 1. 类和方法命名符合PEP8
-# 2. 在model.py中实现对应模块职责
+# 1. 所有导入语句必须位于文件最顶部
+# 2. 类和方法命名符合PEP8
 # 3. 使用类型注解提高可读性
 # 4. 编写必要的docstring
 # 5. 确保与其它模块的接口兼容性
+# 6. 示例：对于model.py，应包含：
+#    from torch import nn
+#    import torch
+#    class Model(nn.Module):
+# 请确保模块间的导入正确，例如train.py需要导入model.Model和dataset.Dataset
 
-请根据上述要求写出具体的代码实现，确保所有接口都被正确实现，不要仅包含注释。例如，对于model.py，必须包含Model类的实现，包括__init__和forward方法。
+请根据上述要求写出具体的代码实现，确保所有接口都被正确实现，不要仅包含注释。例如，对于model.py，必须包含Model类的实现，包括__init__和forward方法，且所有导入语句在文件顶部。
 
 代码实现：
-# model.py
-class Model(torch.nn.Module):
-    def __init__(self, input_size, output_size):
+# 导入所需模块
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torchvision
+import torchvision.transforms as transforms
+import matplotlib.pyplot as plt
+
+# 定义超参数
+PATH = './model.pth'
+
+# 定义模型
+class Model(nn.Module):
+    def __init__(self):
         super(Model, self).__init__()
-        self.linear = torch.nn.Linear(input_size, output_size)
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(16 * 5 * 5, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 10)
 
-    def forward(self, input):
-        output = self.linear(input)
-        return output
+    def forward(self, x):
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = x.view(-1, 16 * 5 * 5)
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
 
-# dataset.py
-from torch.utils.data import DataLoader
-from torchvision import datasets
-from torchvision.transforms import ToTensor
+# 定义数据加载器
+def load_data():
+    transform = transforms.Compose(
+        [transforms.ToTensor(),
+         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-def get_data(train_batch_size, test_batch_size):
-    train_loader = DataLoader(
-        datasets.MNIST(
-            "data",
-            train=True,
-            download=True,
-            transform=ToTensor(),
-        ),
-        batch_size=train_batch_size,
-        shuffle=True,
-    )
-
-    test_loader = DataLoader(
-        datasets.MNIST(
-            "data",
-            train=False,
-            download=True,
-            transform=ToTensor(),
-        ),
-        batch_size=test_batch_size,
-        shuffle=True,
-    )
-    return train_loader, test_loader
-
-# train.py
-from torch import optim
-
-def train(model, train_loader, loss_fn, optimizer, device):
-    size = len(train_loader.dataset)
-    for batch, (X, y) in enumerate(train_loader):
-        X, y = X.to(device), y.to(device)
-
-        # Compute prediction error
-        pred = model(X)
-        loss = loss_fn(pred, y)
-
-        # Backpropagation
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-
-        if batch % 100 == 0:
-            loss, current = loss.item(), batch * len(X)
-            print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
-
-def test(model, test_loader, loss_fn, device):
-    size = len(test_loader.dataset)
-    test_loss, correct = 0, 0
-
-    with torch.no_grad():
-        for X, y in test_loader:
-            X, y = X.to(device), y.to(device)
-
-            pred = model(X)
-            test_loss += loss_fn(pred, y).item()
-            correct += (pred.argmax(1) == y).
+    trainset = torchvision.datasets.CIFAR10(

@@ -1,11 +1,11 @@
 # CodeGen Project
 
 ## Original Description
-生成决策树分类代码
+图像分类系统，输入224x224的RGB图片，输出1000类分类概率
 
 ## Expanded Requirements
 # Expand project description into detailed technical requirements with module specs
-Original description: 生成决策树分类代码
+Original description: 图像分类系统，输入224x224的RGB图片，输出1000类分类概率
 
 请生成：
 1. 详细技术需求（包含输入输出规格）
@@ -18,35 +18,17 @@ Original description: 生成决策树分类代码
    - dataset的输出格式需与model的输入维度匹配
 
 详细需求：
-
-1. 模型结构：
-   - 层：卷积层、池化层、卷积层、池化层、全连接层、输出层
-   - 激活函数：relu、sigmoid、tanh、softmax
-   - 损失函数：交叉熵
-   - 梯度下降方法：
-      - SGD：随机梯度下降
-      - Adam：自适应梯度下降
-      - RMSProp：RMSprop
-      - AdaGrad：AdaGrad
-      - AdaDelta：AdaDelta
-      - Adamax：Adamax
-      - Nadam：Nadam
-      - AdaDelta：AdaDelta
-2. 数据加载：
-   - 网络结构：
-      - 卷积层、池化层、卷积层、池化层、全连接层、输出层
-      - 输入数据格式：NCHW
-      - 输出数据格式：NHWC
-      - 输入数据大小：[N,C,H,W]
-      - 输出数据大小：[N,H,W,C]
-      - 输入数据大小：[N,C,H,W]
-      - 输出数据大小：[N,H,W,C]
-      - 输入数据大小：[N,H,W,C]
-      - 输出数据大小：[N,H,W,C]
-      - 激活函数：relu、sigmoid、tanh
-      - 损失函数：交叉熵
-      - 梯度下降方法：
-         - SGD：随机梯度下降
+1. 图像分类系统，输入224x224的RGB图片，输出1000类分类概率
+2. 图像分类系统，输入224x224的RGB图片，输出1000类分类概率
+3. 图像分类系统，输入224x224的RGB图片，输出1000类分类概率
+4. 图像分类系统，输入224x224的RGB图片，输出1000类分类概率
+5. 图像分类系统，输入224x224的RGB图片，输出1000类分类概率
+6. 图像分类系统，输入224x224的RGB图片，输出1000类分类概率
+7. 图像分类系统，输入224x224的RGB图片，输出1000类分类概率
+8. 图像分类系统，输入224x224的RGB图片，输出1000类分类概率
+9. 图像分类系统，输入224x224的RGB图片，输出1000类分类概率
+10. 图像分类系统，输入224x224的RGB图片，输出1000类分类概率
+11. 图像分类系统，
 
 ## Files
 - model.py: Model architecture

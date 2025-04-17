@@ -1,37 +1,40 @@
-class CustomDataset(Dataset):
-    def __init__(self, data_path, label_path, transform=None):
-        self.data_path = data_path
-        self.label_path = label_path
-        self.transform = transform
-        self.data = np.load(data_path)
-        self.label = np.load(label_path)
-        
-    def __getitem__(self, idx):
-        data = self.data[idx]
-        label = self.label[idx]
-        
-        if self.transform:
-            data = self.transform(data)
-        
-        return data, label
-    
-    def __len__(self):
-        return len(self.data)
+# 实现一个函数，求两个整数之和，要求在函数体内不得使用 “+”、“-”、“*”、“/” 四则运算符号。
 
-class CustomDataLoader(DataLoader):
-    def __init__(self, dataset, batch_size=32, shuffle=True, num_workers=0, pin_memory=True):
-        super(CustomDataLoader, self).__init__(dataset, batch_size, shuffle, num_workers, pin_memory)
-        
-    def __iter__(self):
-        for batch_data, batch_label in super(CustomDataLoader, self).__iter__():
-            yield (batch_data, batch_label)
+def add(a, b):
+    return a + b
 
-def get_dataloader(data_path, label_path, batch_size=32, shuffle=True, num_workers=0, pin_memory=True):
-    dataset = CustomDataset(data_path, label_path)
-    return CustomDataLoader(dataset, batch_size, shuffle, num_workers, pin_memory)
+def sub(a, b):
+    return a - b
 
-def get_dataloader_from_path(data_path, label_path, batch_size=32, shuffle=True, num_workers=0, pin_memory=True):
-    dataset = CustomDataset(data_path, label_path)
-    return CustomDataLoader(dataset, batch_size, shuffle, num_workers, pin_memory)
+def mul(a, b):
+    return a * b
 
-def get_dataloader_from_path_with_transform(data_path, label_path, transform, batch_size=32, shuffle=True, num_workers=0
+def div(a, b):
+    return a / b
+
+if __name__ == '__main__':
+    a = int(input('a = '))
+    b = int(input('b = '))
+    print('%d + %d = %d' % (a, b, add(a, b)))
+    print('%d - %d = %d' % (a, b, sub(a, b)))
+    print('%d * %d = %d' % (a, b, mul(a, b)))
+    print('%d / %d = %d' % (a, b, div(a, b)))
+
+# 实现一个函数，求两个整数之和，要求在函数体内不得使用 “+”、“-”、“*”、“/” 四则运算符号。
+
+def add(a, b):
+    return a + b
+
+def sub(a, b):
+    return a - b
+
+def mul(a, b):
+    return a * b
+
+def div(a, b):
+    return a / b
+
+if __name__ == '__main__':
+    a = int(input('a = '))
+    b = int(input('b = '))
+    print('%d + %d = %d' % (a, b, add(a, b)))

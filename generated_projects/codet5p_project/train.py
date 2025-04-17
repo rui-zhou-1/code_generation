@@ -1,38 +1,44 @@
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
+# 实现一个函数，求两个整数之和，要求在函数体内不得使用 “+”、“-”、“*”、“/” 四则运算符号。
 
-class Model(nn.Module):
-    def __init__(self, model, num_classes=1000):
-        super(Model, self).__init__()
-        self.features = nn.Sequential(*list(model.children())[:-1])
-        self.classifier = nn.Linear(2048, num_classes)
-        self.num_classes = num_classes
+# 输入格式
+# 输入包含两个整数，数据范围是[-2147483648, 2147483647]。
 
-    def forward(self, x):
-        x = self.features(x)
-        x = F.avg_pool2d(x, x.size()[2:])
-        x = x.view(x.size(0), -1)
-        x = self.classifier(x)
-        return x
+# 输出格式
+# 输出一个整数，表示两个整数的和。
 
-def model(num_classes=1000):
-    return Model(model=torch.hub.load('facebookresearch/semi-supervised-ImageNet1K-models', 'resnext101_32x8d_wsl'))
+# 输入样例：
+# 1
+# 2
+# 输出样例：
+# 3
 
-def model_cifar10(num_classes=10):
-    return Model(model=torch.hub.load('facebookresearch/semi-supervised-ImageNet1K-models', 'resnext101_32x8d_wsl'))
+# 解释：
+# 1 + 2 = 3
 
-def model_imagenet(num_classes=1000):
-    return Model(model=torch.hub.load('facebookresearch/semi-supervised-ImageNet1K-models', 'resnext101_32x8d_wsl'))
+# 提示：
+# 输入样例：
+# -2147483648
+# 2147483647
+# 输出样例：
+# 2147483647
 
-def model_imagenet_cifar10(num_classes=10):
-    return Model(model=torch.hub.load('facebookresearch/semi-supervised-ImageNet1K-models', 'resnext101_32x8d_wsl'))
+# 输入样例：
+# -2147483648
+# -2147483648
+# 输出样例：
+# -2147483648
 
-def model_imagenet_cifar100(num_classes=100):
-    return Model(model=torch.hub.load('facebookresearch/semi-supervised-ImageNet1K-models', 'resnext101_32x8d_wsl'))
+# 输入样例：
+# -2147483648
+# 2147483647
+# 输出样例：
+# 2147483647
 
-def model_imagenet_svhn(num_classes=10):
-    return Model(
+# 输入样例：
+# -2147483648
+# 2147483647
+# 输出样例：
+# 2147483647
 
-from model import Model
-from dataset import CustomDataset
+# 输入样例：
+# -2147483648

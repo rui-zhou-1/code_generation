@@ -20,7 +20,6 @@ class CodeT5PGenerator:
         self.generation_config.temperature = 0.7
     
     def generate_expanded_prompt(self, description):
-        """扩展描述并定义模块接口"""
         expansion_prompt = f"""Expand project description with module interface specs: {description}
 
 需要包含：
@@ -44,7 +43,6 @@ class CodeT5PGenerator:
         return self._generate_text(expansion_prompt, max_length=384)
     
     def generate_code(self, prompt):
-        """生成完整代码"""
         return self._generate_text(prompt, max_length=512)
     
     def _generate_text(self, prompt, max_length):
@@ -61,11 +59,9 @@ def create_project(description, output_dir="generated_projects/codet5p_project")
     project_dir = Path(output_dir)
     project_dir.mkdir(parents=True, exist_ok=True)
     
-    # 扩展提示词
     expanded_desc = generator.generate_expanded_prompt(description)
     print(f"Expanded description:\n{expanded_desc}\n{'='*50}")
     
-    # 定义项目文件结构（带接口规范）
     components = {
         "model.py": f'''"""NEURAL NETWORK MODULE
 Requirements:
@@ -106,21 +102,20 @@ class Trainer:
         "requirements.txt": "torch\ntorchvision\nnumpy\npandas"
     }
     
-    # 生成各文件内容
     for filename, header in components.items():
         if filename.endswith('.txt'):
             with open(project_dir / filename, "w") as f:
                 f.write(header)
             continue
-            
-        # 添加接口约束
+        
         prompt = f"""{header}
-# 严格实现上述接口规范，确保：
-# 1. 类和方法签名完全匹配
-# 2. 类型注解准确
-# 3. 使用合理的超参数
+# 实现要求：
+# 1. 所有导入语句必须位于文件最顶部
+# 2. 严格实现上述接口规范
+# 3. 类型注解准确
 # 4. 与其它模块的交互通过定义好的接口进行
-# 5. 添加必要的类型检查和错误处理
+# 5. 示例：在train.py中需要导入model.Model和dataset.CustomDataset类
+# 请确保导入语句正确且位于文件顶部
 
 实现代码："""
         code = generator.generate_code(prompt)
@@ -128,11 +123,11 @@ class Trainer:
         with open(project_dir / filename, "w") as f:
             f.write(code)
     
-    # 添加文件间依赖
-    with open(project_dir / "train.py", "a") as f:
-        f.write("\n\nfrom model import Model\nfrom dataset import CustomDataset\n")
+    generate_readme(project_dir, description, expanded_desc)
     
-    # 生成README
+    print(f"Project generated at: {project_dir.absolute()}")
+
+def generate_readme(project_dir: Path, description: str, expanded_desc: str):
     readme_content = f"""# CodeT5+ Project\n\n## Original Description\n{description}\n\n## Expanded Requirements\n{expanded_desc}\n\n## Files
 - model.py: Model architecture
 - train.py: Training pipeline
@@ -140,8 +135,6 @@ class Trainer:
 - requirements.txt: Dependencies"""
     with open(project_dir / "README.md", "w") as f:
         f.write(readme_content)
-    
-    print(f"Project generated at: {project_dir.absolute()}")
 
 if __name__ == "__main__":
     description = input("Enter project description: ")
