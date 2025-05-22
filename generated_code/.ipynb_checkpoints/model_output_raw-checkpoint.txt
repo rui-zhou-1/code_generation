@@ -1,0 +1,144 @@
+===logistic_regression_model.py===
+
+```python
+import torch
+from torch import nn
+
+class LogisticRegressionModel(nn.Module):
+    """
+    定义逻辑回归模型
+    """
+    def __init__(self, input_dim, output_dim):
+        super(LogisticRegressionModel, self).__init__()
+        self.linear = nn.Linear(input_dim, output_dim)
+
+    def forward(self, x):
+        """
+        前向传播
+        :param x: 输入数据
+        :return: 输出结果
+        """
+        return torch.sigmoid(self.linear(x))
+```
+
+===data_loader.py===
+
+```python
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+import torch
+from torch.utils.data import Dataset, DataLoader
+
+class IrisDataset(Dataset):
+    """
+    加载Iris数据集并构建PyTorch Dataset对象
+    """
+    def __init__(self, data, labels):
+        self.data = torch.tensor(data, dtype=torch.float32)
+        self.labels = torch.tensor(labels, dtype=torch.long)
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        return self.data[idx], self.labels[idx]
+
+def load_data():
+    """
+    加载Iris数据集并划分训练集和测试集
+    :return: 训练集加载器和测试集加载器
+    """
+    iris = load_iris()
+    X = iris.data
+    y = iris.target
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    train_dataset = IrisDataset(X_train, y_train)
+    test_dataset = IrisDataset(X_test, y_test)
+    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    return train_loader, test_loader
+```
+
+===train.py===
+
+```python
+from logistic_regression_model import LogisticRegressionModel
+from data_loader import load_data
+import torch.optim as optim
+import torch.nn.functional as F
+
+def run_exp(model, train_loader, test_loader, num_epochs=100, learning_rate=0.01):
+    """
+    运行实验，包括训练和评估模型
+    :param model: 模型实例
+    :param train_loader: 训练集加载器
+    :param test_loader: 测试集加载器
+    :param num_epochs: 训练轮数
+    :param learning_rate: 学习率
+    """
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.SGD(model.parameters(), lr=learning_rate)
+
+    for epoch in range(num_epochs):
+        model.train()
+        running_loss = 0.0
+        for inputs, labels in train_loader:
+            optimizer.zero_grad()
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+            running_loss += loss.item()
+
+        print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {running_loss / len(train_loader)}")
+
+        model.eval()
+        correct = 0
+        total = 0
+        with torch.no_grad():
+            for inputs, labels in test_loader:
+                outputs = model(inputs)
+                _, predicted = torch.max(outputs.data, 1)
+                total += labels.size(0)
+                correct += (predicted == labels).sum().item()
+
+        print(f'Accuracy of the model on the test images: {100 * correct / total}%')
+
+if __name__ == "__main__":
+    train_loader, test_loader = load_data()
+    model = LogisticRegressionModel(input_dim=4, output_dim=3)
+    run_exp(model, train_loader, test_loader)
+```
+
+===evaluation.py===
+
+```python
+from logistic_regression_model import LogisticRegressionModel
+from data_loader import load_data
+import torch
+
+def eval(model, test_loader):
+    """
+    评估模型性能
+    :param model: 模型实例
+    :param test_loader: 测试集加载器
+    """
+    model.eval()
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        for inputs, labels in test_loader:
+            outputs = model(inputs)
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+
+    print(f'Accuracy of the model on the test images: {100 * correct / total}%')
+
+if __name__ == "__main__":
+    train_loader, test_loader = load_data()
+    model = LogisticRegressionModel(input_dim=4, output_dim=3)
+    eval(model, test_loader)
+```
+
+以上是根据您的要求生成的项目代码框架。您可以根据需要进一步完善这些文件的内容。
